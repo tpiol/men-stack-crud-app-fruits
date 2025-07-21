@@ -2,12 +2,15 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const express = require('express');
-const mongoose = require("mongoose");
 
+// server.js
 const app = express();
+const mongoose = require("mongoose");
+const methodOverride=require("method-override");
+const morgan = require("morgan");
 
 
-
+// Database Connection
 mongoose.connect(process.env.MONGODB_URI);
 mongoose.connection.on("connected", () => {
     console.log(`Connected to MongoDB ${mongoose.connection.name}.`);
@@ -19,7 +22,8 @@ const Fruit =require("./models/fruit.js");
 
 // Adding the middleware for the app ABOVE ALL DEFINED ROUTES
 app.use(express.urlencoded({ extended: false }));
-
+app.use(methodOverride("_method")); 
+app.use(morgan("dev"));
 
 // GET
 app.get("/", async (req, res) => {
@@ -53,6 +57,13 @@ app.post("/fruits", async (req, res) => {
     req.body.isReadyToEat = false;
   }
   await Fruit.create(req.body);
+  res.redirect("/fruits");
+});
+
+
+// DELETE /fruits/:fruitsId
+app.delete("/fruits/:fruitId", async (req, res) => {
+  await Fruit.findByIdAndDelete(req.params.fruitId);
   res.redirect("/fruits");
 });
 
