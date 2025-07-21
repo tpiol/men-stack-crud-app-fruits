@@ -26,6 +26,12 @@ app.get("/", async (req, res) => {
     res.render("index.ejs");
 })
 
+// GET /fruits
+app.get("/fruits", async (req, res) => {
+    const allTheFruits = await Fruit.find();
+    res.render("fruits/index.ejs", { fruits: allTheFruits });
+});
+
 // GET /fruits/new
 app.get("/fruits/new", (req, res) => {
     res.render("fruits/new.ejs")
@@ -39,8 +45,11 @@ app.post("/fruits", async (req, res) => {
     req.body.isReadyToEat = false;
   }
   await Fruit.create(req.body);
-  res.redirect("/fruits/new");
+  res.redirect("/fruits");
 });
+
+
+
 
 app.listen(3000, () => {
   console.log('Listening on port 3000');
